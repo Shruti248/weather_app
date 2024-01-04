@@ -2,6 +2,9 @@ import "dart:ui";
 
 import "package:flutter/material.dart";
 
+import "additional_info_item.dart";
+import "hourly_forecast_item.dart";
+
 class WeatherScreen extends StatelessWidget {
   const WeatherScreen({super.key});
 
@@ -90,7 +93,8 @@ class WeatherScreen extends StatelessWidget {
               ),),
             ),
 
-            const SizedBox(height: 16,),
+            const SizedBox(height: 8,),
+
              const SingleChildScrollView(
                scrollDirection: Axis.horizontal,
                child: Row(
@@ -110,42 +114,25 @@ class WeatherScreen extends StatelessWidget {
             const SizedBox(height: 20,),
 
             // Additional Information Card
-            const Placeholder(
-              fallbackHeight: 150,
-            )
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text('Additional Information' , style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),),
+            ),
 
+            const SizedBox(height: 8,),
 
-
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// creating a separate widget for Card -- that is repeating
-class HourlyForecastItem extends StatelessWidget {
-  const HourlyForecastItem({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 6,
-      child: Container(
-        width: 100,
-        padding: const EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: const Column(
+        const Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Text('03:00' , style: TextStyle(fontSize: 16 , fontWeight: FontWeight.bold),),
-            SizedBox(height: 8,),
+            AdditionalInfoItem(),
+            AdditionalInfoItem(),
+            AdditionalInfoItem(),
+          ],
+        )
 
-            Icon(Icons.cloud , size: 32,),
-            SizedBox(height: 8,),
-
-            Text('320.12' ,),
 
           ],
         ),
@@ -153,4 +140,5 @@ class HourlyForecastItem extends StatelessWidget {
     );
   }
 }
+
 
