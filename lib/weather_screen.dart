@@ -1,12 +1,63 @@
+import "dart:convert";
 import "dart:ui";
 
 import "package:flutter/material.dart";
+import "package:weather_app/secrets.dart";
 
 import "additional_info_item.dart";
 import "hourly_forecast_item.dart";
+import 'package:http/http.dart' as http;
 
-class WeatherScreen extends StatelessWidget {
+class WeatherScreen extends StatefulWidget {
   const WeatherScreen({super.key});
+
+  @override
+  State<WeatherScreen> createState() => _WeatherScreenState();
+}
+
+class _WeatherScreenState extends State<WeatherScreen> {
+
+  double temp = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentWeather();
+  }
+  // in JS -  async operation - returns the Promise
+  Future getCurrentWeather() async
+  {
+    try{
+      String cityName = 'London';
+
+      final res = await http.get(
+        // Uri.parse('https://api.openweathermap.org/data/2.5/weather?q=$cityName&APPID=$openWeatherAPIKey')
+          Uri.parse('https://api.openweathermap.org/data/2.5/forecast?q=$cityName&APPID=$openWeatherAPIKey')
+
+          // print(res.body);
+      );
+
+      // if(res.statusCode == 200){};
+      //   Alternative way of this\
+      final data = jsonDecode(res.body);
+
+      if(data['cod'] != '200'){
+        throw 'An unexpected error occurred.';
+      }
+
+      // Without setState - the async will set the value after the build function - so won't work properly
+      // By using this setState , value is correctly assigned
+      // SetState rebuilds the build function
+      setState(() {
+        // print(data['list'][0]['main']['temp']);
+        temp = data['list'][0]['main']['temp'];
+      });
+
+    }catch(err){
+      throw err.toString();
+    }
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +79,8 @@ class WeatherScreen extends StatelessWidget {
         ],
       ),
 
-
-      body: Padding(
+      // If the temp = 0 -- show loading -- else display contents -- using loadingIndicator
+      body: temp == 0 ? const CircularProgressIndicator() : Padding(
         padding:  const EdgeInsets.all(16.0),
         child:  Column(
           children: [
@@ -56,23 +107,23 @@ class WeatherScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 5 , sigmaY: 5),
-                    child: const Padding(
-                      padding: EdgeInsets.all(16.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
                       child: Column(
                         children: [
-                          Text('300K' , style: TextStyle(
+                          Text('$temp K' , style: const TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
                           ),),
-                    
+
                           // Spacing
-                          SizedBox(height: 16,),
-                          Icon(Icons.cloud , size: 70,),
-                    
+                          const SizedBox(height: 16,),
+                          const Icon(Icons.cloud , size: 70,),
+
                           // Spacing
-                          SizedBox(height: 16,),
-                          Text('Rain', style: TextStyle(fontSize: 20),)
-                    
+                          const SizedBox(height: 16,),
+                          const Text('Rain', style: TextStyle(fontSize: 20),)
+
                         ],
                       ),
                     ),
@@ -97,68 +148,70 @@ class WeatherScreen extends StatelessWidget {
 
             // For web applications in Flutter, the SingleChildScrollView might have issues with scrolling on some platforms, including Chrome. An alternative approach is to use the ListView widget with scrollDirection set to Axis.horizontal for horizontal scrolling.
 
-             // const SingleChildScrollView(
-             //   scrollDirection: Axis.horizontal,
-             //   child: Row(
-             //    children: [
-             //
-             //      HourlyForecastItem(
-             //        time: '00:00',
-             //        icon: Icons.cloud,
-             //        temperature : '301.22',
-             //      ),
-             //      HourlyForecastItem(
-             //        time: '03:00',
-             //        icon: Icons.sunny,
-             //        temperature : '300.52',
-             //      ),
-             //      HourlyForecastItem(
-             //        time: '06:00',
-             //        icon: Icons.cloud,
-             //        temperature : '302.22',),
-             //      HourlyForecastItem(
-             //        time: '09:00',
-             //        icon: Icons.sunny,
-             //        temperature : '301.22',),
-             //      HourlyForecastItem(
-             //        time: '12:00',
-             //        icon: Icons.cloud,
-             //        temperature : '304.22',),
-             //    ],
-             //   ),
-             // ),
+             // Shift + mouse wheel
+             const SingleChildScrollView(
+               scrollDirection: Axis.horizontal,
+               child: Row(
+                children: [
 
-             ListView(
-              scrollDirection: Axis.horizontal,
-              children: const [
-                HourlyForecastItem(
-                  time: '00:00',
-                  icon: Icons.cloud,
-                  temperature: '301.22',
-                ),
-                HourlyForecastItem(
-                  time: '03:00',
-                  icon: Icons.sunny,
-                  temperature: '300.52',
-                ),
-                HourlyForecastItem(
-                  time: '06:00',
-                  icon: Icons.cloud,
-                  temperature: '302.22',
-                ),
-                HourlyForecastItem(
-                  time: '09:00',
-                  icon: Icons.sunny,
-                  temperature: '301.22',
-                ),
-                HourlyForecastItem(
-                  time: '12:00',
-                  icon: Icons.cloud,
-                  temperature: '304.22',
-                ),
-              ],
-            ),
+                  HourlyForecastItem(
+                    time: '00:00',
+                    icon: Icons.cloud,
+                    temperature : '301.22',
+                  ),
+                  HourlyForecastItem(
+                    time: '03:00',
+                    icon: Icons.sunny,
+                    temperature : '300.52',
+                  ),
+                  HourlyForecastItem(
+                    time: '06:00',
+                    icon: Icons.cloud,
+                    temperature : '302.22',),
+                  HourlyForecastItem(
+                    time: '09:00',
+                    icon: Icons.sunny,
+                    temperature : '301.22',),
+                  HourlyForecastItem(
+                    time: '12:00',
+                    icon: Icons.cloud,
+                    temperature : '304.22',),
+                ],
+               ),
+             ),
 
+            //  ListView(
+            //   scrollDirection: Axis.horizontal,
+            //   physics: const NeverScrollableScrollPhysics(),
+            //   children: const [
+            //     HourlyForecastItem(
+            //       time: '00:00',
+            //       icon: Icons.cloud,
+            //       temperature: '301.22',
+            //     ),
+            //     HourlyForecastItem(
+            //       time: '03:00',
+            //       icon: Icons.sunny,
+            //       temperature: '300.52',
+            //     ),
+            //     HourlyForecastItem(
+            //       time: '06:00',
+            //       icon: Icons.cloud,
+            //       temperature: '302.22',
+            //     ),
+            //     HourlyForecastItem(
+            //       time: '09:00',
+            //       icon: Icons.sunny,
+            //       temperature: '301.22',
+            //     ),
+            //     HourlyForecastItem(
+            //       time: '12:00',
+            //       icon: Icons.cloud,
+            //       temperature: '304.22',
+            //     ),
+            //   ],
+            // ),
+            //
 
             // for spacing
             const SizedBox(height: 20,),
