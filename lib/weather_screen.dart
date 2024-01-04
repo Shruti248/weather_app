@@ -168,7 +168,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
               // Weather Forecast cards
               const Align(
                 alignment: Alignment.centerLeft,
-                child: Text('Weather Forecast' , style: TextStyle(
+                child: Text('Hourly Forecast' , style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),),
@@ -179,33 +179,18 @@ class _WeatherScreenState extends State<WeatherScreen> {
               // For web applications in Flutter, the SingleChildScrollView might have issues with scrolling on some platforms, including Chrome. An alternative approach is to use the ListView widget with scrollDirection set to Axis.horizontal for horizontal scrolling.
 
                // Shift + mouse wheel
-               const SingleChildScrollView(
+              SingleChildScrollView(
                  scrollDirection: Axis.horizontal,
                  child: Row(
                   children: [
 
-                    HourlyForecastItem(
-                      time: '00:00',
-                      icon: Icons.cloud,
-                      temperature : '301.22',
-                    ),
-                    HourlyForecastItem(
-                      time: '03:00',
-                      icon: Icons.sunny,
-                      temperature : '300.52',
-                    ),
-                    HourlyForecastItem(
-                      time: '06:00',
-                      icon: Icons.cloud,
-                      temperature : '302.22',),
-                    HourlyForecastItem(
-                      time: '09:00',
-                      icon: Icons.sunny,
-                      temperature : '301.22',),
-                    HourlyForecastItem(
-                      time: '12:00',
-                      icon: Icons.cloud,
-                      temperature : '304.22',),
+                    for(int i = 0 ; i<39 ; i++)
+                      HourlyForecastItem(
+                        time: data['list'][i+1]['dt_txt'],
+                        icon:  data['list'][i+1]['weather'][0]['main'] == 'Clouds' || data['list'][i+1]['weather'][0]['main'] == 'Rain' ? Icons.cloud : Icons.sunny,
+                        temperature : data['list'][i+1]['main']['temp'].toString(),
+                      ),
+
                   ],
                  ),
                ),
