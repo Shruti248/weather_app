@@ -95,36 +95,70 @@ class WeatherScreen extends StatelessWidget {
 
             const SizedBox(height: 8,),
 
-             const SingleChildScrollView(
-               scrollDirection: Axis.horizontal,
-               child: Row(
-                children: [
+            // For web applications in Flutter, the SingleChildScrollView might have issues with scrolling on some platforms, including Chrome. An alternative approach is to use the ListView widget with scrollDirection set to Axis.horizontal for horizontal scrolling.
 
-                  HourlyForecastItem(
-                    time: '00:00',
-                    icon: Icons.cloud,
-                    temperature : '301.22',
-                  ),
-                  HourlyForecastItem(
-                    time: '03:00',
-                    icon: Icons.sunny,
-                    temperature : '300.52',
-                  ),
-                  HourlyForecastItem(
-                    time: '06:00',
-                    icon: Icons.cloud,
-                    temperature : '302.22',),
-                  HourlyForecastItem(
-                    time: '09:00',
-                    icon: Icons.sunny,
-                    temperature : '301.22',),
-                  HourlyForecastItem(
-                    time: '12:00',
-                    icon: Icons.cloud,
-                    temperature : '304.22',),
-                ],
-               ),
-             ),
+             // const SingleChildScrollView(
+             //   scrollDirection: Axis.horizontal,
+             //   child: Row(
+             //    children: [
+             //
+             //      HourlyForecastItem(
+             //        time: '00:00',
+             //        icon: Icons.cloud,
+             //        temperature : '301.22',
+             //      ),
+             //      HourlyForecastItem(
+             //        time: '03:00',
+             //        icon: Icons.sunny,
+             //        temperature : '300.52',
+             //      ),
+             //      HourlyForecastItem(
+             //        time: '06:00',
+             //        icon: Icons.cloud,
+             //        temperature : '302.22',),
+             //      HourlyForecastItem(
+             //        time: '09:00',
+             //        icon: Icons.sunny,
+             //        temperature : '301.22',),
+             //      HourlyForecastItem(
+             //        time: '12:00',
+             //        icon: Icons.cloud,
+             //        temperature : '304.22',),
+             //    ],
+             //   ),
+             // ),
+
+             ListView(
+              scrollDirection: Axis.horizontal,
+              children: const [
+                HourlyForecastItem(
+                  time: '00:00',
+                  icon: Icons.cloud,
+                  temperature: '301.22',
+                ),
+                HourlyForecastItem(
+                  time: '03:00',
+                  icon: Icons.sunny,
+                  temperature: '300.52',
+                ),
+                HourlyForecastItem(
+                  time: '06:00',
+                  icon: Icons.cloud,
+                  temperature: '302.22',
+                ),
+                HourlyForecastItem(
+                  time: '09:00',
+                  icon: Icons.sunny,
+                  temperature: '301.22',
+                ),
+                HourlyForecastItem(
+                  time: '12:00',
+                  icon: Icons.cloud,
+                  temperature: '304.22',
+                ),
+              ],
+            ),
+
 
             // for spacing
             const SizedBox(height: 20,),
