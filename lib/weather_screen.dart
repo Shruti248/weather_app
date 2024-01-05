@@ -32,7 +32,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
   // async operation - returns the Promise
   Future<Map<String, dynamic>> getCurrentWeather() async {
     try {
-      String cityName = 'London';
+      String cityName = 'Surat';
 
       final res = await http.get(
           // Uri.parse('https://api.openweathermap.org/data/2.5/weather?q=$cityName&APPID=$openWeatherAPIKey')
@@ -61,6 +61,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
       // data['list'][0]['main']['temp'];
       return data;
+
     } catch (err) {
       throw err.toString();
     }
@@ -131,184 +132,186 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
           return Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                //   Main Card
-                //   Placeholder(
-                //     // this is applicable only when there is no child --
-                //     fallbackHeight: 250,
-                //     // child: Text('Main card'),
-                //   ),
-
-                // HINT
-                // for only width : USE SIZEBOX
-                // for color , height , width & many more -- USE CONTAINER
-
-                SizedBox(
-                  width: double.infinity,
-                  child: Card(
-                    elevation: 15,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            children: [
-                              Text(
-                                '$currentTemp K',
-                                style: const TextStyle(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.bold,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  //   Main Card
+                  //   Placeholder(
+                  //     // this is applicable only when there is no child --
+                  //     fallbackHeight: 250,
+                  //     // child: Text('Main card'),
+                  //   ),
+              
+                  // HINT
+                  // for only width : USE SIZEBOX
+                  // for color , height , width & many more -- USE CONTAINER
+              
+                  SizedBox(
+                    width: double.infinity,
+                    child: Card(
+                      elevation: 15,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              children: [
+                                Text(
+                                  '$currentTemp K',
+                                  style: const TextStyle(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
-
-                              // Spacing
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              Icon(
-                                currentSky == 'Clouds' || currentSky == 'Rain'
-                                    ? Icons.cloud
-                                    : Icons.sunny,
-                                size: 70,
-                              ),
-
-                              // Spacing
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              Text(
-                                '$currentSky',
-                                style: TextStyle(fontSize: 20),
-                              )
-                            ],
+              
+                                // Spacing
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                Icon(
+                                  currentSky == 'Clouds' || currentSky == 'Rain'
+                                      ? Icons.cloud
+                                      : Icons.sunny,
+                                  size: 70,
+                                ),
+              
+                                // Spacing
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                Text(
+                                  '$currentSky',
+                                  style: TextStyle(fontSize: 20),
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-
-                // for spacing
-                const SizedBox(
-                  height: 20,
-                ),
-
-                // Weather Forecast cards
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Hourly Forecast',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+              
+                  // for spacing
+                  const SizedBox(
+                    height: 20,
+                  ),
+              
+                  // Weather Forecast cards
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Hourly Forecast',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-
-                const SizedBox(
-                  height: 8,
-                ),
-
-                // For web applications in Flutter, the SingleChildScrollView might have issues with scrolling on some platforms, including Chrome. An alternative approach is to use the ListView widget with scrollDirection set to Axis.horizontal for horizontal scrolling.
-
-                // Shift + mouse wheel
-                // SingleChildScrollView(
-                //    scrollDirection: Axis.horizontal,
-                //    child: Row(
-                //     children: [
-                //
-                //       // using this loop -- creates 40 widgets all together -- affects the performance
-                //       // therefore - we want to lazily create the widget only when we scroll - otherwise not
-                //       // Widgets are created on demand - not all at once
-                //       for(int i = 0 ; i<39 ; i++)
-                //         HourlyForecastItem(
-                //           time: data['list'][i+1]['dt_txt'],
-                //           icon:  data['list'][i+1]['weather'][0]['main'] == 'Clouds' || data['list'][i+1]['weather'][0]['main'] == 'Rain' ? Icons.cloud : Icons.sunny,
-                //           temperature : data['list'][i+1]['main']['temp'].toString(),
-                //         ),
-                //
-                //     ],
-                //    ),
-                //  ),
-
-                // The problem with above scroll - it loads the build function as many times as the fro loop - 40 in this case -- therefore load is high on the server
-                // An alternative approach for this -- listViewBuilder -- More OPTIMIZED
-                // MOST IMP -- listViewBuilder
-
-                SizedBox(
-                  height: 140,
-                  child: ListView.builder(
-                      //       This helps us to build the contents taht are lazily loaded -- will be loiaded only when you scroll
-                      // NEED : ItemCount for this
-                      itemCount: 5,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                        final hourlyForecast = data['list'][index + 1];
-                        final hourlySky = hourlyForecast['weather'][0]['main'];
-                        final hourlyTemp =
-                            hourlyForecast['main']['temp'].toString();
-                        // Using a poackage (INTL)to extract the time from teh date time mentioned in string
-                        final time = DateTime.parse(hourlyForecast['dt_txt']);
-                        return HourlyForecastItem(
-                          // Format : 00:00 , 03:00 , 09:00 ---
-                          // time: DateFormat.Hm().format(time)
-                          time: DateFormat('Hm').format(time),
-                          icon: hourlySky == 'Clouds' || hourlySky == 'Rain'
-                              ? Icons.cloud
-                              : Icons.sunny,
-                          temperature: hourlyTemp,
-                        );
-                      }),
-                ),
-
-                // for spacing
-                const SizedBox(
-                  height: 20,
-                ),
-
-                // Additional Information Card
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Additional Information',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+              
+                  const SizedBox(
+                    height: 8,
+                  ),
+              
+                  // For web applications in Flutter, the SingleChildScrollView might have issues with scrolling on some platforms, including Chrome. An alternative approach is to use the ListView widget with scrollDirection set to Axis.horizontal for horizontal scrolling.
+              
+                  // Shift + mouse wheel
+                  // SingleChildScrollView(
+                  //    scrollDirection: Axis.horizontal,
+                  //    child: Row(
+                  //     children: [
+                  //
+                  //       // using this loop -- creates 40 widgets all together -- affects the performance
+                  //       // therefore - we want to lazily create the widget only when we scroll - otherwise not
+                  //       // Widgets are created on demand - not all at once
+                  //       for(int i = 0 ; i<39 ; i++)
+                  //         HourlyForecastItem(
+                  //           time: data['list'][i+1]['dt_txt'],
+                  //           icon:  data['list'][i+1]['weather'][0]['main'] == 'Clouds' || data['list'][i+1]['weather'][0]['main'] == 'Rain' ? Icons.cloud : Icons.sunny,
+                  //           temperature : data['list'][i+1]['main']['temp'].toString(),
+                  //         ),
+                  //
+                  //     ],
+                  //    ),
+                  //  ),
+              
+                  // The problem with above scroll - it loads the build function as many times as the fro loop - 40 in this case -- therefore load is high on the server
+                  // An alternative approach for this -- listViewBuilder -- More OPTIMIZED
+                  // MOST IMP -- listViewBuilder
+              
+                  SizedBox(
+                    height: 140,
+                    child: ListView.builder(
+                        //       This helps us to build the contents taht are lazily loaded -- will be loiaded only when you scroll
+                        // NEED : ItemCount for this
+                        itemCount: 39,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (context, index) {
+                          final hourlyForecast = data['list'][index + 1];
+                          final hourlySky = hourlyForecast['weather'][0]['main'];
+                          final hourlyTemp =
+                              hourlyForecast['main']['temp'].toString();
+                          // Using a poackage (INTL)to extract the time from teh date time mentioned in string
+                          final time = DateTime.parse(hourlyForecast['dt_txt']);
+                          return HourlyForecastItem(
+                            // Format : 00:00 , 03:00 , 09:00 ---
+                            // time: DateFormat.Hm().format(time)
+                            time: DateFormat('Hm').format(time),
+                            icon: hourlySky == 'Clouds' || hourlySky == 'Rain'
+                                ? Icons.cloud
+                                : Icons.sunny,
+                            temperature: hourlyTemp,
+                          );
+                        }),
+                  ),
+              
+                  // for spacing
+                  const SizedBox(
+                    height: 20,
+                  ),
+              
+                  // Additional Information Card
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Additional Information',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-
-                const SizedBox(
-                  height: 8,
-                ),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    AdditionalInfoItem(
-                      icon: Icons.water_drop,
-                      label: 'Humidity',
-                      value: '$currentHumidity',
-                    ),
-                    AdditionalInfoItem(
-                      icon: Icons.air,
-                      label: 'Wind Speed',
-                      value: '$currentWindSpeed',
-                    ),
-                    AdditionalInfoItem(
-                      icon: Icons.beach_access,
-                      label: 'Pressure',
-                      value: '$currentPressure',
-                    ),
-                  ],
-                )
-              ],
+              
+                  const SizedBox(
+                    height: 8,
+                  ),
+              
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      AdditionalInfoItem(
+                        icon: Icons.water_drop,
+                        label: 'Humidity',
+                        value: '$currentHumidity',
+                      ),
+                      AdditionalInfoItem(
+                        icon: Icons.air,
+                        label: 'Wind Speed',
+                        value: '$currentWindSpeed',
+                      ),
+                      AdditionalInfoItem(
+                        icon: Icons.beach_access,
+                        label: 'Pressure',
+                        value: '$currentPressure',
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
           );
         },
