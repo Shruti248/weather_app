@@ -8,6 +8,8 @@ import "package:weather_app/secrets.dart";
 import "additional_info_item.dart";
 import "hourly_forecast_item.dart";
 import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
+
 
 class WeatherScreen extends StatefulWidget {
   const WeatherScreen({super.key});
@@ -34,17 +36,26 @@ class _WeatherScreenState extends State<WeatherScreen> {
     try {
       String cityName = 'Surat';
 
-      final res = await http.get(
-          // Uri.parse('https://api.openweathermap.org/data/2.5/weather?q=$cityName&APPID=$openWeatherAPIKey')
-          Uri.parse(
-              'https://api.openweathermap.org/data/2.5/forecast?q=$cityName&APPID=$openWeatherAPIKey')
+      // final res = await http.get(
+      //     // Uri.parse('https://api.openweathermap.org/data/2.5/weather?q=$cityName&APPID=$openWeatherAPIKey')
+      //     Uri.parse(
+      //         'https://api.openweathermap.org/data/2.5/forecast?q=$cityName&APPID=$openWeatherAPIKey')
+      //
+      //     // print(res.body);
+      //     );
 
-          // print(res.body);
-          );
+      // Sending the request using Dio
+
+      final dio = Dio();
+      final res = await dio.get('https://api.openweathermap.org/data/2.5/forecast?q=$cityName&APPID=$openWeatherAPIKey');
+
 
       // if(res.statusCode == 200){};
       //   Alternative way of this\
-      final data = jsonDecode(res.body);
+
+      // final data = jsonDecode(res.body);
+      print(res);
+      final data = res.data;
 
       if (data['cod'] != '200') {
         throw 'An unexpected error occurred.';
