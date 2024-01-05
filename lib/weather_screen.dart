@@ -18,6 +18,9 @@ class WeatherScreen extends StatefulWidget {
 
 class _WeatherScreenState extends State<WeatherScreen> {
 
+  // For refreshing
+  late Future<Map<String, dynamic>> weather;
+
   // double temp = 0;
   //
   // @override
@@ -27,18 +30,17 @@ class _WeatherScreenState extends State<WeatherScreen> {
   // }
   // in JS -
   // async operation - returns the Promise
-  Future<Map<String, dynamic>> getCurrentWeather() async
-  {
+  Future<Map<String, dynamic>> getCurrentWeather() async {
     try {
       String cityName = 'London';
 
       final res = await http.get(
-        // Uri.parse('https://api.openweathermap.org/data/2.5/weather?q=$cityName&APPID=$openWeatherAPIKey')
+          // Uri.parse('https://api.openweathermap.org/data/2.5/weather?q=$cityName&APPID=$openWeatherAPIKey')
           Uri.parse(
               'https://api.openweathermap.org/data/2.5/forecast?q=$cityName&APPID=$openWeatherAPIKey')
 
-        // print(res.body);
-      );
+          // print(res.body);
+          );
 
       // if(res.statusCode == 200){};
       //   Alternative way of this\
@@ -65,13 +67,19 @@ class _WeatherScreenState extends State<WeatherScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    weather = getCurrentWeather();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Weather App', style: TextStyle(
-          fontWeight: FontWeight.bold,
-        )
-        ),
+        title: const Text('Weather App',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            )),
         centerTitle: true,
         actions: [
           // GestureDetector(child: const Icon(Icons.refresh),
@@ -80,13 +88,23 @@ class _WeatherScreenState extends State<WeatherScreen> {
           //   },
           // ),
 
-          IconButton(onPressed: () {}, icon: const Icon(Icons.refresh)),
+          IconButton(
+              onPressed: () {
+                // NOT RECOMMENEDED -- another way done using variable
+                // Thsi rebuilds the entire scaffold & hence gives the updated value on refreshing it
+                setState(() {
+                  weather = getCurrentWeather();
+                });
+              },
+              icon: const Icon(Icons.refresh)),
         ],
       ),
 
       // If the temp = 0 -- show loading -- else display contents -- using loadingIndicator
       body: FutureBuilder(
-        future: getCurrentWeather(),
+        // future: getCurrentWeather(),
+        // This line is updated for refreshing
+        future: weather,
         builder: (context, snapshot) {
           // Snapshot : A class that handles the state in the app -- Error state -- Loading State -- Data State
           // print(snapshot);
@@ -126,7 +144,6 @@ class _WeatherScreenState extends State<WeatherScreen> {
                 // for only width : USE SIZEBOX
                 // for color , height , width & many more -- USE CONTAINER
 
-
                 SizedBox(
                   width: double.infinity,
                   child: Card(
@@ -142,23 +159,33 @@ class _WeatherScreenState extends State<WeatherScreen> {
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
                             children: [
-                              Text('$currentTemp K', style: const TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                              ),),
+                              Text(
+                                '$currentTemp K',
+                                style: const TextStyle(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
 
                               // Spacing
-                              const SizedBox(height: 16,),
+                              const SizedBox(
+                                height: 16,
+                              ),
                               Icon(
                                 currentSky == 'Clouds' || currentSky == 'Rain'
                                     ? Icons.cloud
-                                    : Icons.sunny, size: 70,),
+                                    : Icons.sunny,
+                                size: 70,
+                              ),
 
                               // Spacing
-                              const SizedBox(height: 16,),
+                              const SizedBox(
+                                height: 16,
+                              ),
                               Text(
-                                '$currentSky', style: TextStyle(fontSize: 20),)
-
+                                '$currentSky',
+                                style: TextStyle(fontSize: 20),
+                              )
                             ],
                           ),
                         ),
@@ -168,18 +195,25 @@ class _WeatherScreenState extends State<WeatherScreen> {
                 ),
 
                 // for spacing
-                const SizedBox(height: 20,),
+                const SizedBox(
+                  height: 20,
+                ),
 
                 // Weather Forecast cards
                 const Align(
                   alignment: Alignment.centerLeft,
-                  child: Text('Hourly Forecast', style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),),
+                  child: Text(
+                    'Hourly Forecast',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
 
-                const SizedBox(height: 8,),
+                const SizedBox(
+                  height: 8,
+                ),
 
                 // For web applications in Flutter, the SingleChildScrollView might have issues with scrolling on some platforms, including Chrome. An alternative approach is to use the ListView widget with scrollDirection set to Axis.horizontal for horizontal scrolling.
 
@@ -210,40 +244,49 @@ class _WeatherScreenState extends State<WeatherScreen> {
                 SizedBox(
                   height: 140,
                   child: ListView.builder(
-                    //       This helps us to build the contents taht are lazily loaded -- will be loiaded only when you scroll
-                    // NEED : ItemCount for this
+                      //       This helps us to build the contents taht are lazily loaded -- will be loiaded only when you scroll
+                      // NEED : ItemCount for this
                       itemCount: 5,
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (context, index) {
-                        final hourlyForecast = data['list'][index+1];
+                        final hourlyForecast = data['list'][index + 1];
                         final hourlySky = hourlyForecast['weather'][0]['main'];
-                        final hourlyTemp = hourlyForecast['main']['temp'].toString();
+                        final hourlyTemp =
+                            hourlyForecast['main']['temp'].toString();
                         // Using a poackage (INTL)to extract the time from teh date time mentioned in string
                         final time = DateTime.parse(hourlyForecast['dt_txt']);
                         return HourlyForecastItem(
-                            // Format : 00:00 , 03:00 , 09:00 ---
-                            // time: DateFormat.Hm().format(time)
-                            time: DateFormat('Hm').format(time),
-                            icon:  hourlySky == 'Clouds' || hourlySky == 'Rain' ? Icons.cloud : Icons.sunny,
-                            temperature: hourlyTemp,
+                          // Format : 00:00 , 03:00 , 09:00 ---
+                          // time: DateFormat.Hm().format(time)
+                          time: DateFormat('Hm').format(time),
+                          icon: hourlySky == 'Clouds' || hourlySky == 'Rain'
+                              ? Icons.cloud
+                              : Icons.sunny,
+                          temperature: hourlyTemp,
                         );
                       }),
                 ),
 
-
                 // for spacing
-                const SizedBox(height: 20,),
+                const SizedBox(
+                  height: 20,
+                ),
 
                 // Additional Information Card
                 const Align(
                   alignment: Alignment.centerLeft,
-                  child: Text('Additional Information', style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),),
+                  child: Text(
+                    'Additional Information',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
 
-                const SizedBox(height: 8,),
+                const SizedBox(
+                  height: 8,
+                ),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -265,8 +308,6 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     ),
                   ],
                 )
-
-
               ],
             ),
           );
@@ -275,5 +316,3 @@ class _WeatherScreenState extends State<WeatherScreen> {
     );
   }
 }
-
-
