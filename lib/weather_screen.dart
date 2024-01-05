@@ -54,7 +54,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
       //   Alternative way of this\
 
       // final data = jsonDecode(res.body);
-      print(res);
+      // print(res);
       final data = res.data;
 
       if (data['cod'] != '200') {
@@ -257,16 +257,19 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   SizedBox(
                     height: 140,
                     child: ListView.builder(
-                        //       This helps us to build the contents taht are lazily loaded -- will be loiaded only when you scroll
+                        //       This helps us to build the contents that are lazily loaded -- will be loaded only when you scroll
                         // NEED : ItemCount for this
-                        itemCount: 39,
+                        // itemCount: 39,
+
+                        // fetching the count from API Res & placing it dynamically
+                        itemCount: data['cnt'],
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (context, index) {
                           final hourlyForecast = data['list'][index + 1];
                           final hourlySky = hourlyForecast['weather'][0]['main'];
                           final hourlyTemp =
                               hourlyForecast['main']['temp'].toString();
-                          // Using a poackage (INTL)to extract the time from teh date time mentioned in string
+                          // Using a package (INTL)to extract the time from teh date time mentioned in string
                           final time = DateTime.parse(hourlyForecast['dt_txt']);
                           return HourlyForecastItem(
                             // Format : 00:00 , 03:00 , 09:00 ---
@@ -277,9 +280,11 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                 : Icons.sunny,
                             temperature: hourlyTemp,
                           );
+
                         }),
+
                   ),
-              
+
                   // for spacing
                   const SizedBox(
                     height: 20,
